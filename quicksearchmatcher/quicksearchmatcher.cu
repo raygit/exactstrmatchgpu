@@ -1,3 +1,8 @@
+/*
+ Copyright 2010. All rights reserved
+ Author: Raymond Tay
+ version: 1.0
+*/
 #include <cuda.h>
 #include <cutil_inline.h>
 #include <stdio.h>
