@@ -1,3 +1,8 @@
+/*
+ Copyright 2010. All rights reserved 
+ Author: Raymond Tay
+ version: 1.0
+*/
 #include <cuda.h>
 #include <stdio.h>
 #include <cutil_inline.h>
@@ -45,7 +50,7 @@ template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 //
 template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 __global__ void strstr2(const char* substr, const char* data, int* results) {
-    __shared__ char sharedData[BLOCK_SIZE];
+    __shared__ char sharedData[BLOCK_SIZE]; // buggy
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 	

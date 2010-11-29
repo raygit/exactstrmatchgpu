@@ -1,3 +1,8 @@
+/*
+ Copyright 2010. All rights reserved 
+ Author: Raymond Tay
+ version: 1.0
+*/
 #include <cuda.h>
 #include <stdio.h>
 #include <cutil_inline.h>
@@ -26,7 +31,7 @@ struct __align__(16) DATA {
 //
 template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 __global__ void strstr(const char* substr, TDATA* data) {
-    __shared__ TDATA sharedData[BLOCK_SIZE];
+    __shared__ TDATA sharedData[BLOCK_SIZE]; // buggy
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -61,7 +66,7 @@ __global__ void strstr(const char* substr, TDATA* data) {
 //
 template<class TDATA>
 __global__ void strstr2(TDATA* data,  int len, int substrlen) {
-    __shared__ TDATA* sharedData[BLOCK_SIZE];
+    __shared__ TDATA* sharedData[BLOCK_SIZE]; // buggy
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 
