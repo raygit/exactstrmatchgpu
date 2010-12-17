@@ -50,11 +50,15 @@ template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 //
 template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 __global__ void strstr2(const char* substr, const char* data, int* results) {
-    __shared__ char sharedData[BLOCK_SIZE]; // buggy
+    __shared__ char sharedData[BLOCK_SIZE + SUBSTRLEN];
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
-	
-    sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
+
+	if ( threadIdx.x == (warpSize - 1) )
+		for(int i = 0; i < SUBSTRLEN; ++i)
+			sharedData[threadIdx.x + i] = data[shft+i];
+	else 
+		sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
     __syncthreads();
 
     const char* s2 = substr;
@@ -82,13 +86,15 @@ __global__ void strstr2(const char* substr, const char* data, int* results) {
 //
 template<class TDATA, unsigned int SUBSTRLEN, unsigned int LEN>
 __global__ void strstr2(const char* data, int* results) {
-    __shared__ char sharedData[BLOCK_SIZE];
+    __shared__ char sharedData[BLOCK_SIZE + SUBSTRLEN];
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 
- 	if ( shft > LEN ) return;
-
-    sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
+	if ( threadIdx.x == (warpSize - 1) )
+		for(int i = 0; i < SUBSTRLEN; ++i)
+			sharedData[threadIdx.x + i] = data[shft+i];
+	else 
+    	sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
     __syncthreads();
 
     const char* s2 = d_stringPattern;

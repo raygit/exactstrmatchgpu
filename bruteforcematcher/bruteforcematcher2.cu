@@ -35,7 +35,11 @@ __global__ void strstr(const char* substr, TDATA* data) {
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 
-    sharedData[threadIdx.x] = *(data + shft); // copy a portion of the text to shared memory for faster access
+	if ( threadIdx.x == (warpSize - 1) )
+		for(int i = 0; i < SUBSTRLEN; ++i)
+			sharedData[threadIdx.x + i] = data[shft+i];
+	else 
+    	sharedData[threadIdx.x] = *(data + shft); // copy a portion of the text to shared memory for faster access
     __syncthreads();
 
     const char* s2 = substr;
@@ -70,7 +74,11 @@ __global__ void strstr2(TDATA* data,  int len, int substrlen) {
  
     int shft = blockIdx.x * blockDim.x + threadIdx.x;
 
-    sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
+	if ( threadIdx.x == (warpSize - 1) )
+		for(int i = 0; i < SUBSTRLEN; ++i)
+			sharedData[threadIdx.x + i] = data[shft+i];
+	else 
+    	sharedData[threadIdx.x] = data[shft]; // copy a portion of the text to shared memory for faster access
     __syncthreads();
 
     const char* s2 = d_stringPattern;
